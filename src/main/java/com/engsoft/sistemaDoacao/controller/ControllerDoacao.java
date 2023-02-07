@@ -83,7 +83,7 @@ public class ControllerDoacao extends ControllerBase<Doacao, Long> {
 
 	@Transactional
 	@PostMapping("/registrarepasse/{idLista}/{idRecebedor}")
-	public boolean registraRepasseDoacao(@PathVariable Long idLista, @PathVariable Long idRecebedor, @RequestBody Integer qntCestasDoadas) {
+	public Doacao registraRepasseDoacao(@PathVariable Long idLista, @PathVariable Long idRecebedor, @RequestBody Integer qntCestasDoadas) {
 		Pessoa recebedor = this.entityManager.find(Pessoa.class, idRecebedor);
 
 		Doacao doacao = getDoacaoDisponivel(recebedor.getBairro().getIdListaDeEspera());
@@ -96,7 +96,8 @@ public class ControllerDoacao extends ControllerBase<Doacao, Long> {
 		this.entityManager.persist(reciboDoacao);
 
 		doacao.removerCestas(qntCestasDoadas);
-		return true;
+		this.entityManager.merge(doacao);
+		return doacao;
 	}
 
 	private Doacao getDoacaoDisponivel(Long idLista) {
